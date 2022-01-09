@@ -79,3 +79,18 @@ class ShippingAddress(models.Model):
 
     class Meta:
         verbose_name_plural = 'Shipping Addresses'
+
+
+class Cart(models.Model):
+    cart_id = models.CharField(max_length=128, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    qty = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.product.name
