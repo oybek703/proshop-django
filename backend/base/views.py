@@ -6,7 +6,7 @@ from .serializers import ProductSerializer
 
 @api_view(['GET'])
 def get_products(request):
-    products = Product.objects.all().order_by('-created_at')
+    products = Product.objects.all().order_by('price')
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
 
