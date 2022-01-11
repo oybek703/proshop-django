@@ -1,5 +1,7 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from django.contrib.auth.models import User
 from .models import Product
 from .serializers import ProductSerializer, UserSerializer, UserSerializerWithToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -22,8 +24,12 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @api_view(['GET'])
 def get_routes(request):
     routes = [
+        '/api/routes'
         '/api/products',
-        '/api/users/login'
+        '/api/products/:id',
+        '/api/users/login',
+        '/api/users/profile',
+        '/api/users'
     ]
     return Response(routes)
 
@@ -43,7 +49,16 @@ def get_product(request, pk):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user_profile(request):
     user = request.user
     serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def get_users(request):
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
