@@ -30,7 +30,7 @@ const ProductDetails = () => {
     }, [params, dispatch])
     return (
         <Container className='mt-3'>
-            <Link to='/' className='btn btn-light'>Go Back</Link>
+            <Link to='/' className='btn btn-light'>Go Home</Link>
             <br/><br/>
             {loading
                 ? <Loader/>

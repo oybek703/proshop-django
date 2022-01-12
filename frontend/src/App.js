@@ -7,6 +7,8 @@ import Header from './components/UI/Header'
 import Footer from './components/UI/Footer'
 import ProductDetails from './components/pages/ProductDetails'
 import Cart from './components/pages/Cart'
+import Login from './components/pages/Login'
+import Register from './components/pages/Register'
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
               <Route path='/' element={<Home/>} exact />
               <Route path='/product/:id' element={<ProductDetails/>} />
               <Route path='/cart' element={<Cart/>} />
+              <Route path='/login' element={<Login/>} />
+              <Route path='/register' element={<Register/>} />
             </Routes>
         </Container>
       </main>

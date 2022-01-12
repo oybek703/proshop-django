@@ -5,7 +5,13 @@ import {
     FETCH_PRODUCT_SUCCESS,
     FETCH_PRODUCTS_FAIL,
     FETCH_PRODUCTS_START,
-    FETCH_PRODUCTS_SUCCESS, REMOVE_FROM_CART
+    FETCH_PRODUCTS_SUCCESS,
+    REMOVE_FROM_CART,
+    USER_LOGIN_FAIL,
+    USER_LOGIN_START,
+    USER_LOGIN_SUCCESS,
+    USER_LOGOUT, USER_REGISTER_FAIL,
+    USER_REGISTER_START, USER_REGISTER_SUCCESS
 } from './types'
 import axiosInstance from '../../utils/axiosInstance'
 
@@ -53,8 +59,14 @@ export function addToCart(productId, qty, fromCart = false) {
                     .map(item => item._id === product._id ? ({...item, qty: +qty}) : item)
             } else {
                 if(!existingProduct) items.push({...product, qty: +qty})
-                if(existingProduct) items = items
-                    .map(item => item._id === product._id ? ({...item, qty: +item['qty']+(+qty)}) : item)
+                if(existingProduct) {
+                    const newQty = +existingProduct.qty+(+qty)
+                    items = items
+                        .map(item => item._id === product._id ? ({
+                            ...item,
+                            qty: newQty > item.count_in_stock ? +item.count_in_stock : newQty
+                        }) : item)
+                }
             }
 
             localStorage.setItem('cartItems', JSON.stringify(items))
@@ -67,10 +79,48 @@ export function addToCart(productId, qty, fromCart = false) {
 
 export function removeFromCart(productId) {
     return function (dispatch, getState) {
-        console.log(productId)
         let {cartItems: {items}} = getState()
         items = items.filter(item => item._id !== productId)
         localStorage.setItem('cartItems', JSON.stringify(items))
         dispatch({type: REMOVE_FROM_CART, payload: items})
+    }
+}
+
+export function login(formData) {
+    return async function (dispatch) {
+        try {
+            dispatch({type: USER_LOGIN_START})
+            const {data} = await axiosInstance.post(
+                `/api/users/login`,
+                {...formData, username: formData['email']}
+            )
+            localStorage.setItem('user', JSON.stringify(data))
+            dispatch({type: USER_LOGIN_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, USER_LOGIN_FAIL, e)
+        }
+    }
+}
+
+export function registerUser(formData) {
+    return async function (dispatch) {
+        try {
+            dispatch({type: USER_REGISTER_START})
+            const {data} = await axiosInstance.post(
+                `/api/users/register`,
+                formData
+            )
+            localStorage.setItem('user', JSON.stringify(data))
+            dispatch({type: USER_REGISTER_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, USER_REGISTER_FAIL, e)
+        }
+    }
+}
+
+export function logout() {
+    return function (dispatch) {
+            localStorage.removeItem('user')
+            dispatch({type: USER_LOGOUT})
     }
 }
