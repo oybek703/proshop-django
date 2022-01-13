@@ -39,7 +39,7 @@ function PlaceOrder() {
             itemsPrice: cart.itemsPrice,
             shippingPrice: cart.shippingPrice,
             taxPrice: cart.taxPrice,
-            totalPrice: cart.totalPrice,
+            totalPrice: cart.totalPrice
         }))
     }
 

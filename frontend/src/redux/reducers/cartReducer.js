@@ -1,4 +1,4 @@
-import {ADD_TO_CART, REMOVE_FROM_CART, SAVE_PAYMENT_METHOD, SAVE_SHIPPING_ADDRESS} from '../actions/types'
+import {ADD_TO_CART, CLEAR_CART, REMOVE_FROM_CART, SAVE_PAYMENT_METHOD, SAVE_SHIPPING_ADDRESS} from '../actions/types'
 
 const cartInStorage = JSON.parse(localStorage.getItem('cart') || null)
 const initialState = {
@@ -19,6 +19,8 @@ function cart(state = initialState, action) {
             return {...state, shippingAddress: payload}
         case SAVE_PAYMENT_METHOD:
             return {...state, paymentMethod: payload}
+        case CLEAR_CART:
+            return  {...state, items: []}
         default:
             return state
     }
