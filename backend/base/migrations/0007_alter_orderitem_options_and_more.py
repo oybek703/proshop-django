@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='shippingaddress',
-            options={'verbose_name_plural': 'Shipping Addresses'},
+            options={'verbose_name_plural': 'ShippingAddress Addresses'},
         ),
         migrations.AddField(
             model_name='orderitem',

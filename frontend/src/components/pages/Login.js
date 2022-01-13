@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import {Link, useLocation, useNavigate} from 'react-router-dom'
 import { Form, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Alert from '../UI/Alert'
@@ -9,6 +9,7 @@ import {USER_LOGIN_RESET, USER_REGISTER_RESET} from '../../redux/actions/types'
 import FormContainer from '../UI/FormContainer'
 
 function Login() {
+    const {search} = useLocation()
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -18,12 +19,13 @@ function Login() {
 
     const {user, loading, error} = useSelector(state => state.userInfo)
     useEffect(() => {
-        if(user) navigate('/')
+        const redirectPath = `${(search && `/${search.split('=')[1]}`) || '/'}`
+        if(user) navigate(redirectPath)
         return function () {
             dispatch({type: USER_LOGIN_RESET})
             dispatch({type: USER_REGISTER_RESET})
         }
-    }, [navigate, user, dispatch])
+    }, [navigate, user, dispatch, search])
     const submitHandler = (e) => {
         e.preventDefault()
         dispatch(login({email, password}))
