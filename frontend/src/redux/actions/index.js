@@ -1,4 +1,6 @@
 import {
+    ADD_ORDER_FAIL,
+    ADD_ORDER_START, ADD_ORDER_SUCCESS,
     ADD_TO_CART,
     FETCH_PRODUCT_FAIL,
     FETCH_PRODUCT_START,
@@ -190,5 +192,28 @@ export function savePaymentMethod(paymentMethod) {
             const cart = {...getState().cart, paymentMethod}
             localStorage.setItem('cart', JSON.stringify(cart))
             dispatch({type: SAVE_PAYMENT_METHOD, payload: paymentMethod})
+    }
+}
+
+export function createOrder(orderData) {
+    return async function (dispatch, getState) {
+        try {
+            const {user: {token}} = getState().userInfo
+            dispatch({type: ADD_ORDER_START})
+            const {data} = await axiosInstance.post(
+                `/api/orders/add`,
+                orderData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            )
+            localStorage.removeItem('cart')
+            dispatch({type: ADD_ORDER_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, ADD_ORDER_FAIL, e)
+        }
     }
 }
