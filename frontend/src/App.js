@@ -10,6 +10,9 @@ import Cart from './components/pages/Cart'
 import Login from './components/pages/Login'
 import Register from './components/pages/Register'
 import Profile from './components/pages/Profile'
+import ShippingAddress from './components/pages/ShippingAddress'
+import Payment from './components/pages/Payment'
+import PlaceOrder from './components/pages/PlaceOrder'
 
 function App() {
   return (
@@ -24,6 +27,9 @@ function App() {
               <Route path='/login' element={<Login/>} />
               <Route path='/register' element={<Register/>} />
               <Route path='/profile' element={<Profile/>} />
+              <Route path='/shipping' element={<ShippingAddress/>} />
+              <Route path='/payment' element={<Payment/>} />
+              <Route path='/placeorder' element={<PlaceOrder/>} />
             </Routes>
         </Container>
       </main>

@@ -1,19 +1,25 @@
 import React from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import Alert from '../UI/Alert'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import {Row, Col, ListGroup, Form, Button, Card, Image} from 'react-bootstrap'
 import {addToCart, removeFromCart} from '../../redux/actions'
 
 const Cart = () => {
     const dispatch = useDispatch()
-    const {items} = useSelector(state => state.cartItems)
+    const navigate = useNavigate()
+    const {user} = useSelector(state => state.userInfo)
+    const {items} = useSelector(state => state.cart)
     function addToCartHandler(productId, {target: {value}}) {
         dispatch(addToCart(productId, value, true))
     }
 
     function removeFromCartHandler(productId) {
         dispatch(removeFromCart(productId))
+    }
+
+    function handleProceedToCheckout() {
+        user ? navigate('/shipping') : navigate('/login?redirect=shipping')
     }
     return (
         <Row>
@@ -87,9 +93,7 @@ const Cart = () => {
                             type='button'
                             className='btn-block'
                             disabled={items.length === 0}
-                            onClick={ () => {}
-                                // checkoutHandler
-                            }
+                            onClick={handleProceedToCheckout}
                         >
                             Proceed To Checkout
                         </Button>

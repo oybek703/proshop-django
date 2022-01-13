@@ -78,5 +78,5 @@ class ShippingAddress(models.Model):
         return self.address
 
     class Meta:
-        verbose_name_plural = 'Shipping Addresses'
+        verbose_name_plural = 'ShippingAddress Addresses'
 
