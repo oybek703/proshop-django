@@ -5,8 +5,8 @@ import {useDispatch, useSelector} from 'react-redux'
 import CheckoutSteps from '../UI/CheckoutSteps'
 import Alert from '../UI/Alert'
 import {createOrder} from '../../redux/actions'
-import {ADD_ORDER_RESET} from '../../redux/actions/types'
 import Spinner from '../UI/Spinner'
+import {ADD_ORDER_RESET} from '../../redux/actions/types'
 
 function PlaceOrder() {
     const navigate = useNavigate()

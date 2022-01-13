@@ -1,5 +1,5 @@
 import {
-    ADD_ORDER_FAIL, ADD_ORDER_RESET,
+    ADD_ORDER_FAIL,
     ADD_ORDER_START, ADD_ORDER_SUCCESS,
     ADD_TO_CART, CLEAR_CART,
     FETCH_PRODUCT_FAIL,
@@ -213,7 +213,6 @@ export function createOrder(orderData) {
             localStorage.removeItem('cart')
             dispatch({type: ADD_ORDER_SUCCESS, payload: data})
             dispatch({type: CLEAR_CART})
-            dispatch({type: ADD_ORDER_RESET})
         } catch (e) {
             dispatchError(dispatch, ADD_ORDER_FAIL, e)
         }
