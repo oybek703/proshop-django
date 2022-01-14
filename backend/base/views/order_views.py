@@ -1,3 +1,5 @@
+from rest_framework import status
+from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -46,5 +48,38 @@ def add_order(request):
         shipping_price=data['shippingPrice']
     )
     # 5. Send order data
-    serializer = OrderSerializer(order, many=False)
+    serializer = OrderSerializer(order)
+    return Response(serializer.data['_id'])
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_order_by_id(request, pk):
+    try:
+        order = Order.objects.get(pk=pk)
+        if request.user.is_staff or request.user == order.user:
+            serializer = OrderSerializer(order)
+            return Response(serializer.data)
+        else:
+            message = {'detail': 'Permission denied.'}
+            return Response(message, status=status.HTTP_403_FORBIDDEN)
+    except Order.DoesNotExist:
+        message = {'detail': 'Order does not exist.'}
+        return Response(message, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def pay_order(request, pk):
+    payment_id = request.data['paymentId']
+    try:
+        order = Order.objects.get(pk=pk)
+        order.is_paid = True
+        order.paid_at = datetime.now()
+        order.payment_id = payment_id
+        order.save()
+        serializer = OrderSerializer(order)
+    except Order.DoesNotExist:
+        message = {'detail': 'Order does not exist.'}
+        return Response(message, status=status.HTTP_404_NOT_FOUND)
     return Response(serializer.data)

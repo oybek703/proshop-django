@@ -2,7 +2,7 @@ import {combineReducers} from 'redux'
 import {product, productList} from './productsReducer'
 import cart from './cartReducer'
 import {userInfo, userDetails} from './userReducer'
-import addOrder from './orderReducer'
+import {addOrder, orderDetails, orderPay} from './orderReducer'
 
 const rootReducer = combineReducers({
     productList,
@@ -10,7 +10,9 @@ const rootReducer = combineReducers({
     cart,
     userInfo,
     userDetails,
-    addOrder
+    addOrder,
+    orderDetails,
+    orderPay
 })
 
 export default rootReducer

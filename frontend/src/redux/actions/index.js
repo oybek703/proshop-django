@@ -1,13 +1,20 @@
 import {
     ADD_ORDER_FAIL,
-    ADD_ORDER_START, ADD_ORDER_SUCCESS,
-    ADD_TO_CART, CLEAR_CART,
+    ADD_ORDER_START,
+    ADD_ORDER_SUCCESS,
+    ADD_TO_CART,
+    CLEAR_CART,
     FETCH_PRODUCT_FAIL,
     FETCH_PRODUCT_START,
     FETCH_PRODUCT_SUCCESS,
     FETCH_PRODUCTS_FAIL,
     FETCH_PRODUCTS_START,
     FETCH_PRODUCTS_SUCCESS,
+    ORDER_DETAILS_FAIL,
+    ORDER_DETAILS_START,
+    ORDER_DETAILS_SUCCESS, ORDER_PAY_FAIL,
+    ORDER_PAY_START,
+    ORDER_PAY_SUCCESS,
     REMOVE_FROM_CART,
     SAVE_PAYMENT_METHOD,
     SAVE_SHIPPING_ADDRESS,
@@ -215,6 +222,45 @@ export function createOrder(orderData) {
             dispatch({type: CLEAR_CART})
         } catch (e) {
             dispatchError(dispatch, ADD_ORDER_FAIL, e)
+        }
+    }
+}
+
+export function fetchOrder(orderId) {
+    return async function (dispatch, getState) {
+        try {
+            const {user: {token}} = getState().userInfo
+            dispatch({type: ORDER_DETAILS_START})
+            const {data} = await axiosInstance.get(`/api/orders/${orderId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            dispatch({type: ORDER_DETAILS_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, ORDER_DETAILS_FAIL, e)
+        }
+    }
+}
+
+export function payOrder(orderId, paymentId) {
+    return async function (dispatch, getState) {
+        try {
+            const {user: {token}} = getState().userInfo
+            dispatch({type: ORDER_PAY_START})
+            const {data} = await axiosInstance.put(`/api/orders/${orderId}/pay`, {
+                paymentId
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            dispatch({type: ORDER_PAY_SUCCESS, payload: data})
+            dispatch({type: ORDER_DETAILS_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, ORDER_PAY_FAIL, e)
         }
     }
 }

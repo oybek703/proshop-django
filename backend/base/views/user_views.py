@@ -32,7 +32,7 @@ def register(request):
             email=data['email'],
             password=make_password(data['password'])
         )
-        serializer = UserSerializerWithToken(user, many=False)
+        serializer = UserSerializerWithToken(user)
         return Response(serializer.data)
     except:
         message = {'detail': 'User with this name already exists.'}
@@ -43,7 +43,7 @@ def register(request):
 @permission_classes([IsAuthenticated])
 def get_user_profile(request):
     user = request.user
-    serializer = UserSerializer(user, many=False)
+    serializer = UserSerializer(user)
     return Response(serializer.data)
 
 
@@ -58,7 +58,7 @@ def update_profile(request):
         if data['password']:
             user.password = make_password(data['password'])
         user.save()
-        serializer = UserSerializerWithToken(user, many=False)
+        serializer = UserSerializerWithToken(user)
         return Response(serializer.data)
     except Exception as e:
         message = {'detail': str(e)}

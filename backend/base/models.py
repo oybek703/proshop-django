@@ -35,6 +35,7 @@ class Review(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     payment_method = models.CharField(max_length=32)
+    payment_id = models.CharField(max_length=32, null=True)
     tax_price = models.DecimalField(max_digits=7, decimal_places=3)
     shipping_price = models.DecimalField(max_digits=7, decimal_places=3)
     total_price = models.DecimalField(max_digits=7, decimal_places=3)
