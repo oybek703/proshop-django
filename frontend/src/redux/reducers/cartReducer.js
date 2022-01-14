@@ -20,7 +20,7 @@ function cart(state = initialState, action) {
         case SAVE_PAYMENT_METHOD:
             return {...state, paymentMethod: payload}
         case CLEAR_CART:
-            return  {...state, items: []}
+            return  {...state, items: [], shippingAddress: null, paymentMethod: null}
         default:
             return state
     }

@@ -29,7 +29,7 @@ function PlaceOrder() {
         }
     }, [cart, user, navigate, shippingAddress, dispatch])
     useEffect(() => {
-        if(order) navigate(`/order/${order._id}`)
+        if(order) navigate(`/order/${order}`)
     }, [order, navigate])
     const handlePlaceOrder = () => {
         dispatch(createOrder({
