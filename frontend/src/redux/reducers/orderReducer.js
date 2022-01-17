@@ -7,7 +7,7 @@ import {
     ORDER_DETAILS_START,
     ORDER_DETAILS_SUCCESS, ORDER_PAY_FAIL,
     ORDER_PAY_START,
-    ORDER_PAY_SUCCESS,
+    ORDER_PAY_SUCCESS, USER_ORDERS_FAIL, USER_ORDERS_START, USER_ORDERS_SUCCESS,
 } from '../actions/types'
 
 const initialState = {
@@ -75,8 +75,31 @@ function orderDetails(state = orderDetailsInitialState, action) {
     }
 }
 
+const userOrdersInitialState = {
+    loading: true,
+    orders: [],
+    error: null
+}
+
+function userOrders(state = userOrdersInitialState, action) {
+    const {type, payload} = action
+    switch (type) {
+        case USER_ORDERS_START:
+            return {...state, loading: true, error: null}
+        case USER_ORDERS_SUCCESS:
+            return {...state, loading: false, orders: payload}
+        case USER_ORDERS_FAIL:
+            return {...state, loading: false, error: payload}
+        default:
+            return state
+    }
+}
+
+
+
 export {
     addOrder,
     orderDetails,
-    orderPay
+    orderPay,
+    userOrders
 }

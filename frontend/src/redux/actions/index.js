@@ -12,12 +12,16 @@ import {
     FETCH_PRODUCTS_SUCCESS,
     ORDER_DETAILS_FAIL,
     ORDER_DETAILS_START,
-    ORDER_DETAILS_SUCCESS, ORDER_PAY_FAIL,
+    ORDER_DETAILS_SUCCESS,
+    ORDER_PAY_FAIL,
     ORDER_PAY_START,
     ORDER_PAY_SUCCESS,
     REMOVE_FROM_CART,
     SAVE_PAYMENT_METHOD,
     SAVE_SHIPPING_ADDRESS,
+    USER_DELETE_FAIL,
+    USER_DELETE_START,
+    USER_DELETE_SUCCESS,
     USER_DETAILS_FAIL,
     USER_DETAILS_START,
     USER_DETAILS_SUCCESS,
@@ -25,9 +29,18 @@ import {
     USER_LOGIN_START,
     USER_LOGIN_SUCCESS,
     USER_LOGOUT,
+    USER_ORDERS_FAIL,
+    USER_ORDERS_START,
+    USER_ORDERS_SUCCESS,
     USER_REGISTER_FAIL,
     USER_REGISTER_START,
-    USER_REGISTER_SUCCESS
+    USER_REGISTER_SUCCESS,
+    USER_UPDATE_FAIL,
+    USER_UPDATE_START,
+    USER_UPDATE_SUCCESS,
+    USERS_LIST_FAIL,
+    USERS_LIST_START,
+    USERS_LIST_SUCCESS
 } from './types'
 import axiosInstance from '../../utils/axiosInstance'
 
@@ -39,6 +52,7 @@ function dispatchError(dispatch, type, e) {
     dispatch({type: type, payload: error})
 }
 
+// PRODUCT ACTIONS
 export function fetchProductList() {
     return async function (dispatch) {
         try {
@@ -105,6 +119,7 @@ export function removeFromCart(productId) {
     }
 }
 
+// USER ACTIONS
 export function login(formData) {
     return async function (dispatch) {
         try {
@@ -155,13 +170,31 @@ export function fetchUser(id = 'profile') {
     }
 }
 
-export function updateUser(formData) {
+export function deleteUser(userId) {
+    return async function (dispatch, getState) {
+        try {
+            const {user: {token}} = getState().userInfo
+            dispatch({type: USER_DELETE_START})
+            const {data} = await axiosInstance.delete(`/api/users/delete/${userId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            dispatch({type: USER_DELETE_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, USER_DELETE_FAIL, e)
+        }
+    }
+}
+
+export function updateUserProfile(formData) {
     return async function (dispatch, getState) {
         try {
             const {user: {token}} = getState().userInfo
             dispatch({type: USER_DETAILS_START})
             const {data} = await axiosInstance.post(
-                `/api/users/update`,
+                `/api/users/update/profile`,
                 formData,
                 {
                     headers: {
@@ -179,6 +212,46 @@ export function updateUser(formData) {
     }
 }
 
+export function fetchUsers() {
+    return async function (dispatch, getState) {
+        try {
+            const {user: {token}} = getState().userInfo
+            dispatch({type: USERS_LIST_START})
+            const {data} = await axiosInstance.get(`/api/users`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            dispatch({type: USERS_LIST_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, USERS_LIST_FAIL, e)
+        }
+    }
+}
+
+export function updateUser(formData) {
+    return async function (dispatch, getState) {
+        try {
+            const {user: {token}} = getState().userInfo
+            dispatch({type: USER_UPDATE_START})
+            const {data} = await axiosInstance.put(
+                `/api/users/update/${formData.id}`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            )
+            dispatch({type: USER_UPDATE_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, USER_UPDATE_FAIL, e)
+        }
+    }
+}
+
 export function logout() {
     return function (dispatch) {
             localStorage.removeItem('user')
@@ -186,6 +259,7 @@ export function logout() {
     }
 }
 
+// PAYMENT ACTIONS
 export function saveShippingAddress(shippingAddress) {
     return function (dispatch, getState) {
             const cart = {...getState().cart, shippingAddress}
@@ -202,6 +276,7 @@ export function savePaymentMethod(paymentMethod) {
     }
 }
 
+// ORDER ACTIONS
 export function createOrder(orderData) {
     return async function (dispatch, getState) {
         try {
@@ -240,6 +315,24 @@ export function fetchOrder(orderId) {
             dispatch({type: ORDER_DETAILS_SUCCESS, payload: data})
         } catch (e) {
             dispatchError(dispatch, ORDER_DETAILS_FAIL, e)
+        }
+    }
+}
+
+export function fetchUserOrders() {
+    return async function (dispatch, getState) {
+        try {
+            const {user: {token}} = getState().userInfo
+            dispatch({type: USER_ORDERS_START})
+            const {data} = await axiosInstance.get(`/api/orders/my`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            dispatch({type: USER_ORDERS_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, USER_ORDERS_FAIL, e)
         }
     }
 }

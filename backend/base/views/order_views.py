@@ -68,6 +68,15 @@ def get_order_by_id(request, pk):
         return Response(message, status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_orders(request):
+    user = request.user
+    orders = Order.objects.filter(user=user)
+    serializer = OrderSerializer(orders, many=True)
+    return Response(serializer.data)
+
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def pay_order(request, pk):

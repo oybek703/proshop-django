@@ -1,5 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react'
 import {Button, Row, Col, ListGroup, Image, Card} from 'react-bootstrap'
+import moment from 'moment'
 import {Link, useNavigate, useParams} from 'react-router-dom'
 import {useDispatch, useSelector} from 'react-redux'
 import {PayPalButton} from 'react-paypal-button-v2'
@@ -17,6 +18,7 @@ function OrderScreen() {
     const [sdkReady, setSdkReady] = useState(false)
     const {user} = useSelector(state => state.userInfo)
     const {order, loading, error} = useSelector(state => state.orderDetails)
+    const {paid} = useSelector(state => state.orderPay)
 
     if (!loading && !error && order) {
         order.itemsPrice = order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0).toFixed(2)
@@ -56,13 +58,12 @@ function OrderScreen() {
                 }
             }
         }
-        if (order && order.is_paid) {
+        if (order) {
             return function () {
                 dispatch({type: ORDER_DETAILS_RESET})
             }
         }
-    }, [user, navigate, dispatch, orderId, order])
-
+    }, [user, navigate, dispatch, orderId, order, paid])
     const successPaymentHandler = (paymentResult) => {
         const {id} = paymentResult
         dispatch(payOrder(orderId, id))
@@ -106,7 +107,7 @@ function OrderScreen() {
                             {order.payment_method}
                         </p>
                         {order.is_paid ? (
-                            <Alert type='success'>Paid on {order.paid_at}</Alert>
+                            <Alert type='success'>Paid on {moment(order.paid_at).format('LLL')}</Alert>
                         ) : (
                             <Alert type='warning'>Not Paid</Alert>
                         )}

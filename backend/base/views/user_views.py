@@ -47,6 +47,14 @@ def get_user_profile(request):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def get_user(request, pk):
+    user = User.objects.get(pk=pk)
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
@@ -65,9 +73,36 @@ def update_profile(request):
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['PUT'])
+@permission_classes([IsAdminUser])
+def update_user(request, pk):
+    data = request.data
+    try:
+        user = User.objects.get(pk=pk)
+        user.first_name = data['name']
+        user.email = data['email']
+        user.is_staff = data['isAdmin']
+        user.save()
+        return Response({'detail': f'User {data["id"]} profile updated.'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        message = {'detail': str(e)}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def get_users(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def delete_user(request, pk):
+    try:
+        user = User.objects.get(pk=pk)
+        user.delete()
+        return Response({'detail': f'User {pk} deleted.'})
+    except User.DoesNotExist:
+        return Response({'detail': 'User does not exist.'}, status=status.HTTP_404_NOT_FOUND)
