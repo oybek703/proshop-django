@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react'
+import moment from 'moment'
 import {Form, Button, Row, Col, Table} from 'react-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
 import Alert from '../UI/Alert'
 import {Link, useNavigate} from 'react-router-dom'
-import {fetchUser, updateUser} from '../../redux/actions'
+import {fetchUser, fetchUserOrders, updateUserProfile} from '../../redux/actions'
 import Spinner from '../UI/Spinner'
+import Loader from '../UI/Loader'
 
 function Profile() {
     const navigate = useNavigate()
@@ -16,13 +18,19 @@ function Profile() {
 
     const dispatch = useDispatch()
 
-    let {error, loading, userDetails} = useSelector(state => state.userDetails)
+    const {userDetails, error, loading} = useSelector(state => state.userDetails)
+    const {
+        orders,
+        error: ordersError,
+        loading: ordersLoading
+    } = useSelector(state => state.userOrders)
     const {user} = useSelector(state => state.userInfo)
     useEffect(() => {
         if (!user) {
             navigate('/login')
         } else {
             dispatch(fetchUser())
+            dispatch(fetchUserOrders())
         }
     }, [dispatch, user, navigate])
     useEffect(() => {
@@ -38,7 +46,7 @@ function Profile() {
             setMessage('Passwords do not match')
             setTimeout(() => setMessage(''), 3000)
         } else {
-            dispatch(updateUser({
+            dispatch(updateUserProfile({
                 'id': user._id,
                 'name': name,
                 'email': email,
@@ -116,12 +124,12 @@ function Profile() {
             </Col>
             <Col md={9}>
                 <h2>My Orders</h2>
-                {/*{loadingOrders ? (*/}
-                {/*    <Loader />*/}
-                {/*) : errorOrders ? (*/}
-                {/*    <Message variant='danger'>{errorOrders}</Message>*/}
-                {/*) : (*/}
-                <Table striped responsive className='table-sm'>
+                {ordersLoading ? (
+                    <Loader />
+                ) : ordersError ? (
+                    <Alert type='danger'>{ordersError}</Alert>
+                ) : (
+                <Table striped responsive className='table'>
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -134,12 +142,12 @@ function Profile() {
                     </thead>
 
                     <tbody>
-                    {[].map(order => (
+                    {orders.map(order => (
                         <tr key={order._id}>
                             <td>{order._id}</td>
-                            <td>{order.createdAt.substring(0, 10)}</td>
-                            <td>${order.totalPrice}</td>
-                            <td>{order.isPaid ? order.paidAt.substring(0, 10) : (
+                            <td>{moment(order.created_at).format('LLL')}</td>
+                            <td>${order.total_price}</td>
+                            <td>{order.is_paid ? moment(order.paid_at).format('LLL') : (
                                 <i className='fas fa-times' style={{color: 'red'}}></i>
                             )}</td>
                             <td>
@@ -151,7 +159,7 @@ function Profile() {
                     ))}
                     </tbody>
                 </Table>
-                {/*)}*/}
+                )}
             </Col>
         </Row>
     )
