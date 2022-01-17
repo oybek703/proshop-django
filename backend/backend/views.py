@@ -9,3 +9,8 @@ from django.conf import settings
 def paypal(request):
     client_id = settings.PAYPAL_CLIENT_ID
     return Response({'client_id': client_id})
+
+
+@api_view(['GET'])
+def index(request):
+    return Response({'detail': 'API is working...'})

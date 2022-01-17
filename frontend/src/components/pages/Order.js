@@ -16,11 +16,7 @@ function OrderScreen() {
     const dispatch = useDispatch()
     const [sdkReady, setSdkReady] = useState(false)
     const {user} = useSelector(state => state.userInfo)
-    const {order = {}, loading, error} = useSelector(state => state.orderDetails)
-
-    const orderDeliver = useSelector(state => state.orderDeliver)
-    const {loading: loadingDeliver, success: successDeliver} = orderDeliver || {}
-
+    const {order, loading, error} = useSelector(state => state.orderDetails)
 
     if (!loading && !error && order) {
         order.itemsPrice = order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0).toFixed(2)
@@ -78,7 +74,7 @@ function OrderScreen() {
         <Loader/>
     ) : error ? (
         <Alert type='danger'>{error}</Alert>
-    ) : (<>
+    ) : (order && <>
         <h1>Order: {order._id}</h1>
         <Row>
             <Col md={8}>
@@ -197,7 +193,7 @@ function OrderScreen() {
                             </ListGroup.Item>
                         )}
                     </ListGroup>
-                    {loadingDeliver && <Loader/>}
+                    {/*{loadingDeliver && <Loader/>}*/}
                     {user && user.is_admin && order.is_paid && !order.is_delivered && (
                         <ListGroup.Item>
                             <Button
