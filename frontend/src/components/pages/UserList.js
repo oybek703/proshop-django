@@ -45,7 +45,7 @@ function UsersList() {
                 : error || deleteError
                     ? (<Alert type='danger'>{error}</Alert>)
                     : (
-                        <Table hover responsive className='table-sm'>
+                        <Table hover bordered responsive className='table'>
                             <thead>
                             <tr>
                                 <th>ID</th>

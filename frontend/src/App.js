@@ -16,6 +16,9 @@ import PlaceOrder from './components/pages/PlaceOrder'
 import Order from './components/pages/Order'
 import UsersList from './components/pages/UserList'
 import EditUser from './components/pages/EditUser'
+import ProductList from './components/pages/ProductList'
+import EditProduct from './components/pages/EditProduct'
+import CreateProduct from './components/pages/CreateProduct'
 
 function App() {
   return (
@@ -36,6 +39,9 @@ function App() {
               <Route path='/order/:id' element={<Order/>} />
               <Route path='/admin/users' element={<UsersList/>} />
               <Route path='/admin/users/:id/edit' element={<EditUser/>} />
+              <Route path='/admin/products' element={<ProductList/>} />
+              <Route path='/admin/products/:id/edit' element={<EditProduct/>} />
+              <Route path='/admin/products/create' element={<CreateProduct/>} />
             </Routes>
         </Container>
       </main>

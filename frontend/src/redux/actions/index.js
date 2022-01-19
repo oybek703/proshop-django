@@ -4,6 +4,11 @@ import {
     ADD_ORDER_SUCCESS,
     ADD_TO_CART,
     CLEAR_CART,
+    CREATE_PRODUCT_FAIL,
+    CREATE_PRODUCT_START,
+    CREATE_PRODUCT_SUCCESS,
+    DELETE_PRODUCT_FAIL, DELETE_PRODUCT_START,
+    DELETE_PRODUCT_SUCCESS,
     FETCH_PRODUCT_FAIL,
     FETCH_PRODUCT_START,
     FETCH_PRODUCT_SUCCESS,
@@ -19,6 +24,9 @@ import {
     REMOVE_FROM_CART,
     SAVE_PAYMENT_METHOD,
     SAVE_SHIPPING_ADDRESS,
+    UPDATE_PRODUCT_FAIL,
+    UPDATE_PRODUCT_START,
+    UPDATE_PRODUCT_SUCCESS,
     USER_DELETE_FAIL,
     USER_DELETE_START,
     USER_DELETE_SUCCESS,
@@ -116,6 +124,61 @@ export function removeFromCart(productId) {
         cart = {...cart, items}
         localStorage.setItem('cart', JSON.stringify(cart))
         dispatch({type: REMOVE_FROM_CART, payload: items})
+    }
+}
+
+export function updateProduct(formData) {
+    return async function(dispatch, getState) {
+        try{
+            const {user} = getState().userInfo
+            dispatch({type: UPDATE_PRODUCT_START})
+            const {data} = await axiosInstance.put(`/api/products/update`, formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            dispatch({type: UPDATE_PRODUCT_SUCCESS, payload: data})
+            dispatch({type: FETCH_PRODUCT_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, UPDATE_PRODUCT_FAIL, e)
+        }
+    }
+}
+
+export function createProduct(formData) {
+    return async function(dispatch, getState) {
+        try{
+            const {user} = getState().userInfo
+            dispatch({type: CREATE_PRODUCT_START})
+            const {data} = await axiosInstance.post(`/api/products/create`, formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            dispatch({type: CREATE_PRODUCT_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, CREATE_PRODUCT_FAIL, e)
+        }
+    }
+}
+
+export function deleteProduct(productId) {
+    return async function (dispatch, getState) {
+        try {
+            const {user: {token}} = getState().userInfo
+            dispatch({type: DELETE_PRODUCT_START})
+            const {data} = await axiosInstance.delete(`/api/products/delete/${productId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            dispatch({type: DELETE_PRODUCT_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, DELETE_PRODUCT_FAIL, e)
+        }
     }
 }
 
