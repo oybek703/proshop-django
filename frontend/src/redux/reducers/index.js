@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux'
-import {product, productList} from './productsReducer'
+import {createProduct, deleteProduct, product, productList, updateProduct} from './productsReducer'
 import cart from './cartReducer'
 import {userInfo, userDetails, usersList, userDelete, userUpdate} from './userReducer'
 import {addOrder, orderDetails, orderPay, userOrders} from './orderReducer'
@@ -16,7 +16,10 @@ const rootReducer = combineReducers({
     orderPay,
     usersList,
     userDelete,
-    userUpdate
+    userUpdate,
+    updateProduct,
+    createProduct,
+    deleteProduct
 })
 
 export default rootReducer
