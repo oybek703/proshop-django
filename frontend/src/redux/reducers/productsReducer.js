@@ -1,7 +1,7 @@
 import {
     CREATE_PRODUCT_FAIL, CREATE_PRODUCT_RESET,
     CREATE_PRODUCT_START,
-    CREATE_PRODUCT_SUCCESS,
+    CREATE_PRODUCT_SUCCESS, CREATE_REVIEW_FAIL, CREATE_REVIEW_RESET, CREATE_REVIEW_START, CREATE_REVIEW_SUCCESS,
     DELETE_PRODUCT_FAIL,
     DELETE_PRODUCT_START,
     DELETE_PRODUCT_SUCCESS,
@@ -94,6 +94,29 @@ export function createProduct(state = createProductInitialState, action) {
             return {...state, loading: false, error: payload}
         case CREATE_PRODUCT_RESET:
             return {...state, error: null, created: null}
+        default:
+            return state
+    }
+}
+
+const createReviewInitialState = {
+    review: null,
+    loading: false,
+    error: null
+}
+
+
+export function createReview(state = createReviewInitialState, action) {
+    const {type, payload} = action
+    switch (type) {
+        case CREATE_REVIEW_START:
+            return {...state, loading: true, error: null}
+        case CREATE_REVIEW_SUCCESS:
+            return {...state, loading: false, review: payload}
+        case CREATE_REVIEW_FAIL:
+            return {...state, loading: false, error: payload}
+        case CREATE_REVIEW_RESET:
+            return {...state, error: null, review: null}
         default:
             return state
     }

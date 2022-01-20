@@ -6,7 +6,7 @@ import {
     CLEAR_CART,
     CREATE_PRODUCT_FAIL,
     CREATE_PRODUCT_START,
-    CREATE_PRODUCT_SUCCESS,
+    CREATE_PRODUCT_SUCCESS, CREATE_REVIEW_FAIL, CREATE_REVIEW_START, CREATE_REVIEW_SUCCESS,
     DELETE_PRODUCT_FAIL, DELETE_PRODUCT_START,
     DELETE_PRODUCT_SUCCESS,
     FETCH_PRODUCT_FAIL,
@@ -61,11 +61,11 @@ function dispatchError(dispatch, type, e) {
 }
 
 // PRODUCT ACTIONS
-export function fetchProductList() {
+export function fetchProductList(keyword = '') {
     return async function (dispatch) {
         try {
             dispatch({type: FETCH_PRODUCTS_START})
-            const {data} = await axiosInstance.get(`/api/products`)
+            const {data} = await axiosInstance.get(`/api/products?keyword=${keyword}`)
             dispatch({type: FETCH_PRODUCTS_SUCCESS, payload: data})
         } catch (e) {
             dispatchError(dispatch, FETCH_PRODUCTS_FAIL, e)
@@ -178,6 +178,24 @@ export function deleteProduct(productId) {
             dispatch({type: DELETE_PRODUCT_SUCCESS, payload: data})
         } catch (e) {
             dispatchError(dispatch, DELETE_PRODUCT_FAIL, e)
+        }
+    }
+}
+
+export function createReview(formData) {
+    return async function(dispatch, getState) {
+        try{
+            const {user} = getState().userInfo
+            dispatch({type: CREATE_REVIEW_START})
+            const {data} = await axiosInstance.post(`/api/products/create_review`, formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            dispatch({type: CREATE_REVIEW_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, CREATE_REVIEW_FAIL, e)
         }
     }
 }

@@ -5,13 +5,16 @@ import {useDispatch, useSelector} from 'react-redux'
 import {fetchProductList} from '../../redux/actions'
 import Loader from '../UI/Loader'
 import Alert from '../UI/Alert'
+import {useLocation} from 'react-router-dom'
 
 const Home = () => {
     const dispatch = useDispatch()
+    const {search} = useLocation()
     const {products, loading, error} = useSelector(state => state.productList)
     useEffect(() => {
-        dispatch(fetchProductList())
-    }, [dispatch])
+        const keyword = search.split('=')[1]
+        dispatch(fetchProductList(keyword))
+    }, [dispatch, search])
     return (
         <>
             <h1>Latest Products</h1>
