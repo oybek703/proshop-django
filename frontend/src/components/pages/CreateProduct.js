@@ -53,7 +53,7 @@ function CreateProduct() {
                             <Form.Control
 
                                 type='text'
-                                placeholder='Enter name'
+                                 placeholder='Enter name'
                                 required
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}

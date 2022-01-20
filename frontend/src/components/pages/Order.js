@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Fragment} from 'react'
+import React, {useState, useEffect} from 'react'
 import {Button, Row, Col, ListGroup, Image, Card} from 'react-bootstrap'
 import moment from 'moment'
 import {Link, useNavigate, useParams} from 'react-router-dom'
@@ -6,7 +6,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import {PayPalButton} from 'react-paypal-button-v2'
 import Loader from '../UI/Loader'
 import Alert from '../UI/Alert'
-import {fetchOrder, payOrder} from '../../redux/actions'
+import {deliverOrder, fetchOrder, payOrder} from '../../redux/actions'
 import Spinner from '../UI/Spinner'
 import axiosInstance from '../../utils/axiosInstance'
 import {ORDER_DETAILS_RESET} from '../../redux/actions/types'
@@ -19,6 +19,11 @@ function OrderScreen() {
     const {user} = useSelector(state => state.userInfo)
     const {order, loading, error} = useSelector(state => state.orderDetails)
     const {paid} = useSelector(state => state.orderPay)
+    const {
+        delivered,
+        loading: deliverLoading,
+        error: deliverError
+    } = useSelector(state => state.orderDeliver)
 
     if (!loading && !error && order) {
         order.itemsPrice = order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0).toFixed(2)
@@ -63,13 +68,14 @@ function OrderScreen() {
                 dispatch({type: ORDER_DETAILS_RESET})
             }
         }
-    }, [user, navigate, dispatch, orderId, order, paid])
+    }, [user, navigate, dispatch, orderId, order, paid, delivered])
     const successPaymentHandler = (paymentResult) => {
         const {id} = paymentResult
         dispatch(payOrder(orderId, id))
     }
     const deliverHandler = () => {
-        // dispatch(deliverOrder(order))
+        dispatch(deliverOrder(orderId))
+        if(deliverError) console.log(deliverError)
     }
     return loading ? (
         <Loader/>
@@ -194,15 +200,15 @@ function OrderScreen() {
                             </ListGroup.Item>
                         )}
                     </ListGroup>
-                    {/*{loadingDeliver && <Loader/>}*/}
                     {user && user.is_admin && order.is_paid && !order.is_delivered && (
                         <ListGroup.Item>
                             <Button
+                                disabled={deliverLoading}
                                 type='button'
                                 className='btn btn-block'
                                 onClick={deliverHandler}
                             >
-                                Mark As Delivered
+                                Mark As Delivered {deliverLoading && <Spinner small/>}
                             </Button>
                         </ListGroup.Item>
                     )}

@@ -3,11 +3,22 @@ import {
     ADD_ORDER_RESET,
     ADD_ORDER_START,
     ADD_ORDER_SUCCESS,
-    ORDER_DETAILS_FAIL, ORDER_DETAILS_RESET,
+    ALL_ORDERS_FAIL,
+    ALL_ORDERS_START,
+    ALL_ORDERS_SUCCESS,
+    ORDER_DELIVER_FAIL,
+    ORDER_DELIVER_START,
+    ORDER_DELIVER_SUCCESS,
+    ORDER_DETAILS_FAIL,
+    ORDER_DETAILS_RESET,
     ORDER_DETAILS_START,
-    ORDER_DETAILS_SUCCESS, ORDER_PAY_FAIL,
+    ORDER_DETAILS_SUCCESS,
+    ORDER_PAY_FAIL,
     ORDER_PAY_START,
-    ORDER_PAY_SUCCESS, USER_ORDERS_FAIL, USER_ORDERS_START, USER_ORDERS_SUCCESS,
+    ORDER_PAY_SUCCESS,
+    USER_ORDERS_FAIL,
+    USER_ORDERS_START,
+    USER_ORDERS_SUCCESS,
 } from '../actions/types'
 
 const initialState = {
@@ -16,7 +27,7 @@ const initialState = {
     error: null
 }
 
-function addOrder(state = initialState, action) {
+export function addOrder(state = initialState, action) {
     const {type, payload} = action
     switch (type) {
         case ADD_ORDER_START:
@@ -39,7 +50,7 @@ const orderPayInitialState = {
     error: null
 }
 
-function orderPay(state = orderPayInitialState, action) {
+export function orderPay(state = orderPayInitialState, action) {
     const {type, payload} = action
     switch (type) {
         case ORDER_PAY_START:
@@ -53,13 +64,33 @@ function orderPay(state = orderPayInitialState, action) {
     }
 }
 
+const orderDeliverInitialState = {
+    loading: false,
+    delivered: false,
+    error: null
+}
+
+export function orderDeliver(state = orderDeliverInitialState, action) {
+    const {type, payload} = action
+    switch (type) {
+        case ORDER_DELIVER_START:
+            return {...state, loading: true}
+        case ORDER_DELIVER_SUCCESS:
+            return {...state, loading: false, delivered: payload}
+        case ORDER_DELIVER_FAIL:
+            return {...state, loading: false, error: payload}
+        default:
+            return state
+    }
+}
+
 const orderDetailsInitialState = {
     loading: true,
     order: null,
     error: null
 }
 
-function orderDetails(state = orderDetailsInitialState, action) {
+export function orderDetails(state = orderDetailsInitialState, action) {
     const {type, payload} = action
     switch (type) {
         case ORDER_DETAILS_START:
@@ -81,7 +112,7 @@ const userOrdersInitialState = {
     error: null
 }
 
-function userOrders(state = userOrdersInitialState, action) {
+export function userOrders(state = userOrdersInitialState, action) {
     const {type, payload} = action
     switch (type) {
         case USER_ORDERS_START:
@@ -95,11 +126,22 @@ function userOrders(state = userOrdersInitialState, action) {
     }
 }
 
+const allOrdersInitialState = {
+    loading: true,
+    orders: [],
+    error: null
+}
 
-
-export {
-    addOrder,
-    orderDetails,
-    orderPay,
-    userOrders
+export function allOrders(state = allOrdersInitialState, action) {
+    const {type, payload} = action
+    switch (type) {
+        case ALL_ORDERS_START:
+            return {...state, loading: true, error: null}
+        case ALL_ORDERS_SUCCESS:
+            return {...state, loading: false, orders: payload}
+        case ALL_ORDERS_FAIL:
+            return {...state, loading: false, error: payload}
+        default:
+            return state
+    }
 }

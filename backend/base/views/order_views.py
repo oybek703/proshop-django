@@ -2,7 +2,7 @@ from rest_framework import status
 from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import permission_classes
 from ..models import Order, OrderItem, ShippingAddress, Product
 from ..serializers import OrderSerializer
@@ -91,4 +91,23 @@ def pay_order(request, pk):
     except Order.DoesNotExist:
         message = {'detail': 'Order does not exist.'}
         return Response(message, status=status.HTTP_404_NOT_FOUND)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def get_all_orders(request):
+    orders = Order.objects.all()
+    serializer = OrderSerializer(orders, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAdminUser])
+def mark_as_delivered(request, pk):
+    order = Order.objects.get(pk=pk)
+    order.is_delivered = True
+    order.delivered_at = datetime.now()
+    order.save()
+    serializer = OrderSerializer(order)
     return Response(serializer.data)
