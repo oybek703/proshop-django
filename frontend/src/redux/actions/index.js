@@ -88,7 +88,7 @@ export function fetchProduct(id) {
 export function addToCart(productId, qty, fromCart = false) {
     return async function (dispatch, getState) {
         try {
-            const {data: products} = await axiosInstance('/api/products')
+            const {data: products} = await axiosInstance('/api/products/all')
             const product = products.find(p => p._id === +productId)
             let {cart} = getState()
             let {items} = cart
