@@ -61,11 +61,11 @@ function dispatchError(dispatch, type, e) {
 }
 
 // PRODUCT ACTIONS
-export function fetchProductList(keyword = '') {
+export function fetchProductList(queryParams = '') {
     return async function (dispatch) {
         try {
             dispatch({type: FETCH_PRODUCTS_START})
-            const {data} = await axiosInstance.get(`/api/products?keyword=${keyword}`)
+            const {data} = await axiosInstance.get(`/api/products${queryParams}`)
             dispatch({type: FETCH_PRODUCTS_SUCCESS, payload: data})
         } catch (e) {
             dispatchError(dispatch, FETCH_PRODUCTS_FAIL, e)

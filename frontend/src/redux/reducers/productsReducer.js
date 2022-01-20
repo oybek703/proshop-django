@@ -19,16 +19,19 @@ import {
 const initialState = {
     products: [],
     loading: false,
-    error: null
+    error: null,
+    page: 1,
+    pages: 1
 }
 
 export function productList(state = initialState, action) {
-    const {type, payload} = action
+    const {type, payload = {}} = action
+    const {products, page, pages} = payload
     switch (type) {
         case FETCH_PRODUCTS_START:
             return {...state, loading: true, error: null}
         case FETCH_PRODUCTS_SUCCESS:
-            return {...state, loading: false, products: payload}
+            return {...state, loading: false, products, page, pages}
         case FETCH_PRODUCTS_FAIL:
             return {...state, loading: false, error: payload}
         default:

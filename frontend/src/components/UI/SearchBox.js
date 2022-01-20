@@ -7,16 +7,17 @@ import Spinner from './Spinner'
 
 function SearchBox() {
     const dispatch = useDispatch()
-    const {search} = useLocation()
+    const {search, pathname} = useLocation()
     const {loading} = useSelector(state => state.productList)
-    const existingKeyword = search ? search.split('=')[1] : ''
+    const existingKeyword = search ? search.split('keyword=')[1] : ''
     const [keyword, setKeyword] = useState(existingKeyword)
     const navigate = useNavigate()
     const handleSubmit = (e) => {
         e.preventDefault()
-        if(keyword) navigate(`/?keyword=${keyword}`)
-        else navigate('/')
-        dispatch(fetchProductList(keyword))
+        let queryParams = `/?page=1&keyword=${keyword}`
+        if(!keyword) queryParams = '/?page=1'
+        navigate(`${pathname.includes('admin') ? '/admin/products' : ''}${queryParams}`)
+        dispatch(fetchProductList(queryParams))
     }
     return (
         <Form onSubmit={handleSubmit} className='d-flex'>
@@ -24,10 +25,10 @@ function SearchBox() {
                 type='text'
                 name='q'
                 disabled={loading}
+                value={keyword || ''}
                 onChange={(e) => setKeyword(e.target.value)}
                 className='form-control mr-3'
                 placeholder='Search product'
-                value={keyword}
                 style={{marginRight: 10}}
             />
 

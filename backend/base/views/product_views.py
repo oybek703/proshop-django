@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -8,12 +9,19 @@ from ..serializers import ProductSerializer
 
 @api_view(['GET'])
 def get_products(request):
-    keyword = request.GET.get('keyword')
     products = Product.objects.all().order_by('price')
-    if keyword:
-        products = products.filter(name__icontains=keyword)
+    keyword = request.GET.get('keyword', '')
+    products = products.filter(name__icontains=keyword)
+    page = request.GET.get('page', 1)
+    paginator = Paginator(products, 3)
+    try:
+        products = paginator.page(page)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
+    except PageNotAnInteger:
+        products = paginator.page(1)
     serializer = ProductSerializer(products, many=True)
-    return Response(serializer.data)
+    return Response({'products': serializer.data, 'page': page, 'pages': paginator.num_pages})
 
 
 @api_view(['GET'])

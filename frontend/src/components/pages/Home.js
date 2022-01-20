@@ -6,14 +6,14 @@ import {fetchProductList} from '../../redux/actions'
 import Loader from '../UI/Loader'
 import Alert from '../UI/Alert'
 import {useLocation} from 'react-router-dom'
+import Paginate from '../UI/Paginate'
 
 const Home = () => {
     const dispatch = useDispatch()
     const {search} = useLocation()
-    const {products, loading, error} = useSelector(state => state.productList)
+    const {products, page, pages, loading, error} = useSelector(state => state.productList)
     useEffect(() => {
-        const keyword = search.split('=')[1]
-        dispatch(fetchProductList(keyword))
+        dispatch(fetchProductList(search))
     }, [dispatch, search])
     return (
         <>
@@ -24,10 +24,11 @@ const Home = () => {
                     ? <Alert message={error}/>
                     : <Row>
                         {products.map(product => (
-                            <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
+                            <Col key={product._id} sm={12} md={6} lg={4}>
                                 <Product product={product}/>
                             </Col>
                         ))}
+                        <Paginate pages={pages} page={page} />
                       </Row>}
         </>
     )
