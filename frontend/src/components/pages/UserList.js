@@ -48,6 +48,7 @@ function UsersList() {
                         <Table hover bordered responsive className='table'>
                             <thead>
                             <tr>
+                                <th>№</th>
                                 <th>ID</th>
                                 <th>NAME</th>
                                 <th>EMAIL</th>
@@ -57,8 +58,9 @@ function UsersList() {
                             </thead>
 
                             <tbody>
-                            {users.map(u => (
+                            {users.map((u, i) => (
                                 <tr key={u._id}>
+                                    <td>{i+1}</td>
                                     <td>{u._id}</td>
                                     <td>{u.name}</td>
                                     <td>{u.email}</td>

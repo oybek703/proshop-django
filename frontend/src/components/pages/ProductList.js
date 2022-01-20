@@ -62,6 +62,7 @@ function ProductList() {
                         <Table hover bordered responsive className='table'>
                             <thead>
                             <tr>
+                                <th>№</th>
                                 <th>ID</th>
                                 <th>NAME</th>
                                 <th>PRICE</th>
@@ -72,8 +73,9 @@ function ProductList() {
                             </thead>
 
                             <tbody>
-                            {products.map(product => (
+                            {products.map((product, i) => (
                                 <tr key={product._id}>
+                                    <td>{i+1}</td>
                                     <td>{product._id}</td>
                                     <td>{product.name}</td>
                                     <td>${product.price}</td>

@@ -2,7 +2,7 @@ import {
     ADD_ORDER_FAIL,
     ADD_ORDER_START,
     ADD_ORDER_SUCCESS,
-    ADD_TO_CART,
+    ADD_TO_CART, ALL_ORDERS_FAIL, ALL_ORDERS_START, ALL_ORDERS_SUCCESS,
     CLEAR_CART,
     CREATE_PRODUCT_FAIL,
     CREATE_PRODUCT_START,
@@ -14,7 +14,7 @@ import {
     FETCH_PRODUCT_SUCCESS,
     FETCH_PRODUCTS_FAIL,
     FETCH_PRODUCTS_START,
-    FETCH_PRODUCTS_SUCCESS,
+    FETCH_PRODUCTS_SUCCESS, ORDER_DELIVER_FAIL, ORDER_DELIVER_START, ORDER_DELIVER_SUCCESS,
     ORDER_DETAILS_FAIL,
     ORDER_DETAILS_START,
     ORDER_DETAILS_SUCCESS,
@@ -400,6 +400,24 @@ export function fetchUserOrders() {
     }
 }
 
+export function fetchAllOrders() {
+    return async function (dispatch, getState) {
+        try {
+            const {user: {token}} = getState().userInfo
+            dispatch({type: ALL_ORDERS_START})
+            const {data} = await axiosInstance.get(`/api/orders/all`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            dispatch({type: ALL_ORDERS_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, ALL_ORDERS_FAIL, e)
+        }
+    }
+}
+
 export function payOrder(orderId, paymentId) {
     return async function (dispatch, getState) {
         try {
@@ -417,6 +435,27 @@ export function payOrder(orderId, paymentId) {
             dispatch({type: ORDER_DETAILS_SUCCESS, payload: data})
         } catch (e) {
             dispatchError(dispatch, ORDER_PAY_FAIL, e)
+        }
+    }
+}
+
+export function deliverOrder(orderId) {
+    return async function (dispatch, getState) {
+        try {
+            const {user: {token}} = getState().userInfo
+            dispatch({type: ORDER_DELIVER_START})
+            const {data} = await axiosInstance.put(`/api/orders/${orderId}/deliver`,
+                {},
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+            })
+            dispatch({type: ORDER_DELIVER_SUCCESS, payload: data})
+            dispatch({type: ORDER_DETAILS_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, ORDER_DELIVER_FAIL, e)
         }
     }
 }
