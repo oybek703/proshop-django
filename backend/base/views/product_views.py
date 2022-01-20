@@ -8,7 +8,10 @@ from ..serializers import ProductSerializer
 
 @api_view(['GET'])
 def get_products(request):
+    keyword = request.GET.get('keyword')
     products = Product.objects.all().order_by('price')
+    if keyword:
+        products = products.filter(name__icontains=keyword)
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
 
@@ -111,7 +114,16 @@ def create_review(request):
                     rating=request.data['rating'],
                     comment=request.data['comment']
                 )
+                product.num_reviews += 1
+                product.save()
                 new_review.save()
+            reviews = product.reviews.all()
+            total = 0
+            for review in list(reviews):
+                total += review.rating
+            rating = total / len(reviews)
+            product.rating = rating
+            product.save()
             serializer = ProductSerializer(product)
             return Response(serializer.data)
         else:
