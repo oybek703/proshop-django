@@ -2,17 +2,17 @@ import React, {useEffect} from 'react'
 import {LinkContainer} from 'react-router-bootstrap'
 import {Table, Button, Row, Col} from 'react-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
-import {useNavigate} from 'react-router-dom'
+import {useLocation, useNavigate} from 'react-router-dom'
 import Loader from '../UI/Loader'
 import Alert from '../UI/Alert'
 import {deleteProduct, fetchProductList} from '../../redux/actions'
+import Paginate from '../UI/Paginate'
 
 function ProductList() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-
-    const {products, loading, error} = useSelector(state => state.productList)
-
+    const {search} = useLocation()
+    const {products, page, pages, loading, error} = useSelector(state => state.productList)
     const {
         loading: loadingDelete,
         error: errorDelete,
@@ -23,8 +23,8 @@ function ProductList() {
 
     useEffect(() => {
         if (!user.is_admin) navigate('/login')
-        dispatch(fetchProductList())
-    }, [dispatch, navigate, deleted, user])
+        dispatch(fetchProductList(search))
+    }, [dispatch, navigate, deleted, user, search])
 
 
     const deleteHandler = (id) => {
@@ -103,6 +103,7 @@ function ProductList() {
                             </tbody>
                         </Table>
                     )}
+            <Paginate pages={pages} page={page} isAdmin={true} />
         </div>
     )
 }

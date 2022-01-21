@@ -4,6 +4,7 @@ import {LinkContainer} from 'react-router-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
 import {logout} from '../../redux/actions'
 import {useNavigate} from 'react-router-dom'
+import SearchBox from './SearchBox'
 
 function Header() {
     const dispatch = useDispatch()
@@ -18,15 +19,15 @@ function Header() {
         <header>
             <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
                 <Container className='d-flex justify-content-between'>
-                    <LinkContainer to='/'>
+                    <LinkContainer to='/'  style={{fontSize: '2rem', fontWeight: 'bold', color: '#eee'}}>
                         <Navbar.Brand>PROSHOP</Navbar.Brand>
                     </LinkContainer>
-
+                    <SearchBox/>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse id="basic-navbar-nav" className='justify-content-end'>
                         <Nav className="ml-auto">
                             <LinkContainer to='/cart'>
-                                <Nav.Link ><i className="fas fa-shopping-cart"></i>&nbsp;CART</Nav.Link>
+                                <Nav.Link ><i className="fas fa-shopping-cart"/>&nbsp;CART</Nav.Link>
                             </LinkContainer>
                             {user ? (
                                 <NavDropdown title={user.name.toUpperCase()} id='username'>

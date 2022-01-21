@@ -6,7 +6,7 @@ import {
     CLEAR_CART,
     CREATE_PRODUCT_FAIL,
     CREATE_PRODUCT_START,
-    CREATE_PRODUCT_SUCCESS,
+    CREATE_PRODUCT_SUCCESS, CREATE_REVIEW_FAIL, CREATE_REVIEW_START, CREATE_REVIEW_SUCCESS,
     DELETE_PRODUCT_FAIL, DELETE_PRODUCT_START,
     DELETE_PRODUCT_SUCCESS,
     FETCH_PRODUCT_FAIL,
@@ -23,7 +23,7 @@ import {
     ORDER_PAY_SUCCESS,
     REMOVE_FROM_CART,
     SAVE_PAYMENT_METHOD,
-    SAVE_SHIPPING_ADDRESS,
+    SAVE_SHIPPING_ADDRESS, TOP_PRODUCTS_FAIL, TOP_PRODUCTS_START, TOP_PRODUCTS_SUCCESS,
     UPDATE_PRODUCT_FAIL,
     UPDATE_PRODUCT_START,
     UPDATE_PRODUCT_SUCCESS,
@@ -61,14 +61,26 @@ function dispatchError(dispatch, type, e) {
 }
 
 // PRODUCT ACTIONS
-export function fetchProductList() {
+export function fetchProductList(queryParams = '') {
     return async function (dispatch) {
         try {
             dispatch({type: FETCH_PRODUCTS_START})
-            const {data} = await axiosInstance.get(`/api/products`)
+            const {data} = await axiosInstance.get(`/api/products${queryParams}`)
             dispatch({type: FETCH_PRODUCTS_SUCCESS, payload: data})
         } catch (e) {
             dispatchError(dispatch, FETCH_PRODUCTS_FAIL, e)
+        }
+    }
+}
+
+export function fetchTopProducts() {
+    return async function (dispatch) {
+        try {
+            dispatch({type: TOP_PRODUCTS_START})
+            const {data} = await axiosInstance.get(`/api/products/top`)
+            dispatch({type: TOP_PRODUCTS_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, TOP_PRODUCTS_FAIL, e)
         }
     }
 }
@@ -88,7 +100,7 @@ export function fetchProduct(id) {
 export function addToCart(productId, qty, fromCart = false) {
     return async function (dispatch, getState) {
         try {
-            const {data: products} = await axiosInstance('/api/products')
+            const {data: products} = await axiosInstance('/api/products/all')
             const product = products.find(p => p._id === +productId)
             let {cart} = getState()
             let {items} = cart
@@ -178,6 +190,24 @@ export function deleteProduct(productId) {
             dispatch({type: DELETE_PRODUCT_SUCCESS, payload: data})
         } catch (e) {
             dispatchError(dispatch, DELETE_PRODUCT_FAIL, e)
+        }
+    }
+}
+
+export function createReview(formData) {
+    return async function(dispatch, getState) {
+        try{
+            const {user} = getState().userInfo
+            dispatch({type: CREATE_REVIEW_START})
+            const {data} = await axiosInstance.post(`/api/products/create_review`, formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            dispatch({type: CREATE_REVIEW_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, CREATE_REVIEW_FAIL, e)
         }
     }
 }

@@ -4,30 +4,58 @@ import {
     ListGroup,
     Form, Row,
     Col, Image,
-    ListGroupItem, Container
+    ListGroupItem, Container, Button
 } from 'react-bootstrap'
 import Rating from '../UI/Rating'
+import moment from 'moment'
 import {useDispatch, useSelector} from 'react-redux'
-import {addToCart, fetchProduct} from '../../redux/actions'
+import {addToCart, createReview, fetchProduct} from '../../redux/actions'
 import Loader from '../UI/Loader'
 import Alert from '../UI/Alert'
+import Spinner from '../UI/Spinner'
+import {CREATE_REVIEW_RESET} from '../../redux/actions/types'
 
 const ProductDetails = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const params = useParams()
+    const {id: productId} = useParams()
+    const [comment, setComment] = useState('')
+    const [rating, setRating] = useState('')
+    const [updating, setUpdating] = useState(false)
     const [qty, setQty] = useState(1)
     const {product, loading, error} = useSelector(state => state.product)
+    const {
+        review,
+        loading: createReviewLoading,
+        error: createReviewError
+    } = useSelector(state => state.createReview)
+    const {user} = useSelector(state => state.userInfo)
     function handleAddToCart() {
-        const {id} = params
-        dispatch(addToCart(id, qty))
+        dispatch(addToCart(productId, qty))
         navigate(`/cart`)
     }
 
+    function setUpdatingComment(rating, comment) {
+        setUpdating(true)
+        setRating(parseInt(rating))
+        setComment(comment)
+    }
+
     useEffect(() => {
-        const {id} = params
-        dispatch(fetchProduct(id))
-    }, [params, dispatch])
+        dispatch(fetchProduct(productId))
+        return function () {
+            dispatch({type: CREATE_REVIEW_RESET})
+        }
+    }, [productId, dispatch, review])
+
+    function handleReviewSubmit(e) {
+        e.preventDefault()
+        dispatch(createReview({rating, comment, productId}))
+        setComment('')
+        setRating('')
+        setUpdating(false)
+    }
+
     return (
         <Container className='mt-3'>
             <Link to='/' className='btn btn-light'>Go Home</Link>
@@ -101,6 +129,72 @@ const ProductDetails = () => {
                                     </ListGroupItem>
                                 </ListGroup>
                             </Col>
+                        </Row>
+                        <hr/>
+                        <Row>
+                            <ListGroup variant='flush'>
+                                <ListGroup.Item>
+                                    <h4 id='updateComment'>{updating ? 'Update' : 'Write'} a review</h4>
+                                    {createReviewError && <Alert type='danger'>{createReviewError}</Alert>}
+
+                                    {user ? (
+                                        <Form onSubmit={handleReviewSubmit}>
+                                            <Form.Group controlId='rating'>
+                                                <Form.Label>Rating</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={rating}
+                                                    onChange={(e) => setRating(e.target.value)}
+                                                >
+                                                    <option value=''>Select...</option>
+                                                    <option value='1'>1 - Poor</option>
+                                                    <option value='2'>2 - Fair</option>
+                                                    <option value='3'>3 - Good</option>
+                                                    <option value='4'>4 - Very Good</option>
+                                                    <option value='5'>5 - Excellent</option>
+                                                </Form.Control>
+                                            </Form.Group>
+                                            <Form.Group controlId='comment'>
+                                                <Form.Label>Review</Form.Label>
+                                                <Form.Control
+                                                    as='textarea'
+                                                    row='10'
+                                                    value={comment}
+                                                    onChange={(e) => setComment(e.target.value)}
+                                                />
+                                            </Form.Group>
+                                            <br/>
+                                            <Button
+                                                disabled={createReviewLoading}
+                                                type='submit'
+                                                variant='primary'
+                                            >
+                                                {updating ? 'Update' : 'Submit'} {createReviewLoading && <Spinner small/>}
+                                            </Button>
+
+                                        </Form>
+                                    ) : (
+                                        <Alert type='info'>Please <Link to='/login'>login </Link>
+                                            and purchase this product to write a
+                                            review.</Alert>
+                                    )}
+                                </ListGroup.Item>
+                                {product.reviews.map((review) => (
+                                    <ListGroup.Item key={review._id}>
+                                        <strong>{review.name}</strong>
+                                        <Rating value={review.rating} color='#f8e825'/>
+                                        <p>{moment(review.created_at).format('LLL')}</p>
+                                        <p>
+                                            {review.comment} &nbsp;
+                                            {user && user._id === review.user &&
+                                            <a onClick={setUpdatingComment.bind(null, review.rating, review.comment)}
+                                               href="#updateComment" title='Update your comment'>
+                                                <i className='far fa-edit' style={{color: '#585858'}}/>
+                                            </a>}
+                                        </p>
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
                         </Row>
                     </>
             }
