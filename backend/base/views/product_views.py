@@ -30,6 +30,14 @@ def get_all_products(request):
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
 
+
+@api_view(['GET'])
+def get_top_products(request):
+    products = Product.objects.filter().order_by('-rating')[0:5]
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
+
+
 @api_view(['GET'])
 def get_product(request, pk):
     product = Product.objects.get(pk=pk)

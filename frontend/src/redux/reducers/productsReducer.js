@@ -10,7 +10,7 @@ import {
     FETCH_PRODUCT_SUCCESS,
     FETCH_PRODUCTS_FAIL,
     FETCH_PRODUCTS_START,
-    FETCH_PRODUCTS_SUCCESS,
+    FETCH_PRODUCTS_SUCCESS, TOP_PRODUCTS_FAIL, TOP_PRODUCTS_START, TOP_PRODUCTS_SUCCESS,
     UPDATE_PRODUCT_FAIL,
     UPDATE_PRODUCT_START,
     UPDATE_PRODUCT_SUCCESS
@@ -33,6 +33,26 @@ export function productList(state = initialState, action) {
         case FETCH_PRODUCTS_SUCCESS:
             return {...state, loading: false, products, page, pages}
         case FETCH_PRODUCTS_FAIL:
+            return {...state, loading: false, error: payload}
+        default:
+            return state
+    }
+}
+
+const topProductsInitialState = {
+    products: [],
+    loading: false,
+    error: null
+}
+
+export function topProducts(state = topProductsInitialState, action) {
+    const {type, payload = {}} = action
+    switch (type) {
+        case TOP_PRODUCTS_START:
+            return {...state, loading: true, error: null}
+        case TOP_PRODUCTS_SUCCESS:
+            return {...state, loading: false, products: payload}
+        case TOP_PRODUCTS_FAIL:
             return {...state, loading: false, error: payload}
         default:
             return state

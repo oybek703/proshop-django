@@ -23,7 +23,7 @@ import {
     ORDER_PAY_SUCCESS,
     REMOVE_FROM_CART,
     SAVE_PAYMENT_METHOD,
-    SAVE_SHIPPING_ADDRESS,
+    SAVE_SHIPPING_ADDRESS, TOP_PRODUCTS_FAIL, TOP_PRODUCTS_START, TOP_PRODUCTS_SUCCESS,
     UPDATE_PRODUCT_FAIL,
     UPDATE_PRODUCT_START,
     UPDATE_PRODUCT_SUCCESS,
@@ -69,6 +69,18 @@ export function fetchProductList(queryParams = '') {
             dispatch({type: FETCH_PRODUCTS_SUCCESS, payload: data})
         } catch (e) {
             dispatchError(dispatch, FETCH_PRODUCTS_FAIL, e)
+        }
+    }
+}
+
+export function fetchTopProducts() {
+    return async function (dispatch) {
+        try {
+            dispatch({type: TOP_PRODUCTS_START})
+            const {data} = await axiosInstance.get(`/api/products/top`)
+            dispatch({type: TOP_PRODUCTS_SUCCESS, payload: data})
+        } catch (e) {
+            dispatchError(dispatch, TOP_PRODUCTS_FAIL, e)
         }
     }
 }

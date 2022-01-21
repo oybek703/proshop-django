@@ -7,6 +7,7 @@ import Loader from '../UI/Loader'
 import Alert from '../UI/Alert'
 import {useLocation} from 'react-router-dom'
 import Paginate from '../UI/Paginate'
+import ProductCarousel from '../UI/ProductCarousel'
 
 const Home = () => {
     const dispatch = useDispatch()
@@ -17,19 +18,20 @@ const Home = () => {
     }, [dispatch, search])
     return (
         <>
-            <h1>Latest Products</h1>
             {loading
                 ? <Loader/>
                 : error
                     ? <Alert message={error}/>
                     : <Row>
+                        {!search.includes('keyword') && <ProductCarousel/>}
+                        <h1>Latest Products</h1>
                         {products.map(product => (
                             <Col key={product._id} sm={12} md={6} lg={4}>
                                 <Product product={product}/>
                             </Col>
                         ))}
-                        <Paginate pages={pages} page={page} />
-                      </Row>}
+                        <Paginate pages={pages} page={page}/>
+                    </Row>}
         </>
     )
 }
