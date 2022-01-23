@@ -1,0 +1,18 @@
+1. https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-20-04
+Link gives step by step explanation for deploying django app to digitalocean ubuntu 20.4 server
+Example files are in this directory:
+    a) gunicorn.service files will not be changed.
+    b) gunicorn.service file examples:
+        c) User: linux user that have sudo permission
+        d) Group: www-data (for serving static files from nginx)
+        e) WorkingDirectory is working directory that manage.py, db.sqlite3 and other files located
+        f) ExecStart gunicorn execution path (for detecting which gunicorn in django virtualenv file)
+2. If nginx can not serve static files and returns 403 Forbidden error this means nginx have
+no enough permission for reading this file. One solution for this is change STATIC_ROOT
+directory to /home/<username>/<project_name> in order collectstatic can collect this files there.
+3. If nginx gives 502 Bad Gateway error this means gunicorn service is not running or error from web server.
+4. myproject is nginx configuration file:
+    a) listen 8000 (for local pc)
+    b) for serving media files location /media/ should point to MEDIA_ROOT directory in django
+    for example, it is good for local pc to serve media files from static directory like this:
+    /home/<username>/<project_name>/static for static and /home/<username>/<project_name>/media for media files
