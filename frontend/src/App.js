@@ -20,6 +20,7 @@ import ProductList from './components/pages/ProductList'
 import EditProduct from './components/pages/EditProduct'
 import CreateProduct from './components/pages/CreateProduct'
 import OrderList from './components/pages/OrderList'
+import NotFound from './components/pages/NotFound'
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
               <Route path='/admin/products/:id/edit' element={<EditProduct/>} />
               <Route path='/admin/products/create' element={<CreateProduct/>} />
               <Route path='/admin/orders' element={<OrderList/>} />
+              <Route path='*' element={<NotFound/>} />
             </Routes>
         </Container>
       </main>
