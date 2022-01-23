@@ -28,7 +28,6 @@ DEBUG = int(os.environ.get('DEBUG', default=0))
 
 # PAYPAL CLIENT ID
 PAYPAL_CLIENT_ID = os.environ.get('PAYPAL_CLIENT_ID')
-print(PAYPAL_CLIENT_ID)
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 # Application definition
@@ -87,6 +86,7 @@ SIMPLE_JWT = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
@@ -171,13 +171,14 @@ STATICFILES_DIRS = [
     BASE_DIR / 'frontend/images',
     BASE_DIR / 'frontend'
 ]
-STATIC_ROOT = '/home/oybek/proshop/static'
+STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/home/oybek/proshop/media'
+MEDIA_ROOT = BASE_DIR / 'media'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
