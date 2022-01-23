@@ -1,0 +1,17 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=oybek
+Group=www-data
+WorkingDirectory=/media/oybek/52FA9099FA907AC5/working projects/python/proshop project/proshop/backend/
+ExecStart=/home/oybek/.local/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          backend.wsgi:application
+
+[Install]
+WantedBy=multi-user.target

@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
@@ -12,5 +11,6 @@ def paypal(request):
     return Response({'client_id': client_id})
 
 
-def handler404(request, exception):
-    return render(request, 'index.html')
+@api_view(['GET'])
+def index(request):
+    return Response({'detail': 'API is working...'})
